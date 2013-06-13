@@ -626,9 +626,11 @@ static int spkr_drv_wrnd_param_set(const char *val,
 		mutex_unlock(&codec->mutex);
 		return ret;
 	}
+	WCD9XXX_BCL_UNLOCK(&priv->resmgr);
 
 	pr_debug("%s: spkr_drv_wrnd %d -> %d\n", __func__, old, spkr_drv_wrnd);
-	if ((old == -1 || old == 0) && spkr_drv_wrnd == 1) {
+	codec = priv->codec;
+	if (old == 0 && spkr_drv_wrnd == 1) {
 		WCD9XXX_BG_CLK_LOCK(&priv->resmgr);
 		wcd9xxx_resmgr_get_bandgap(&priv->resmgr,
 					   WCD9XXX_BANDGAP_AUDIO_MODE);
