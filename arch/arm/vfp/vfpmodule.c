@@ -816,7 +816,7 @@ static int __init vfp_init(void)
 }
 
 #ifdef CONFIG_MACH_LGE
-rootfs_initcall(vfp_init);
+core_initcall(vfp_init);
 #else /* origin */
-rootfs_initcall(vfp_init);
+core_initcall(vfp_init);
 #endif
