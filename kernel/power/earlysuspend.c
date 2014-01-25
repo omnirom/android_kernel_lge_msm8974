@@ -17,6 +17,7 @@
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/rtc.h>
+#include <linux/syscalls.h> /* sys_sync */
 #include <linux/wakelock.h>
 #include <linux/workqueue.h>
 #ifdef CONFIG_MACH_LGE
@@ -186,8 +187,10 @@ static void early_suspend(struct work_struct *work)
 #ifdef CONFIG_MACH_LGE
 	save_earlysuspend_step(EARLYSUSPEND_MUTEXUNLOCK);
 #endif
+        if (debug_mask & DEBUG_SUSPEND)
+                pr_info("early_suspend: sync\n");
 
-	suspend_sys_sync_queue();
+        sys_sync();
 #ifdef CONFIG_MACH_LGE
 	save_earlysuspend_step(EARLYSUSPEND_SYNCDONE);
 #endif
