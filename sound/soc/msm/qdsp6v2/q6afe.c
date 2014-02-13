@@ -382,8 +382,7 @@ static int afe_apr_send_pkt(void *data, wait_queue_head_t *wait)
 {
 	int ret;
 
-	if (wait)
-		atomic_set(&this_afe.state, 1);
+	atomic_set(&this_afe.state, 1);
 	atomic_set(&this_afe.status, 0);
 	ret = apr_send_pkt(this_afe.apr, data);
 	if (ret > 0) {
@@ -2805,14 +2804,7 @@ int afe_close(int port_id)
 	uint16_t port_index;
 
 	if (this_afe.apr == NULL) {
-		pr_err("%s: AFE is already closed\n", __func__);
-		if ((port_id == RT_PROXY_DAI_001_RX) ||
-		    (port_id == RT_PROXY_DAI_002_TX))
-			pcm_afe_instance[port_id & 0x1] = 0;
-		if ((port_id == RT_PROXY_DAI_002_RX) ||
-		    (port_id == RT_PROXY_DAI_001_TX))
-			proxy_afe_instance[port_id & 0x1] = 0;
-		afe_close_done[port_id & 0x1] = true;
+		pr_err("AFE is already closed\n");
 		ret = -EINVAL;
 		goto fail_cmd;
 	}

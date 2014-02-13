@@ -65,8 +65,6 @@
 /* Enable Sample_Rate/Channel_Mode notification event from Decoder */
 #define SR_CM_NOTIFY_ENABLE	0x0004
 
-#define TUN_WRITE_IO_MODE 0x0008 /* tunnel read write mode */
-#define TUN_READ_IO_MODE  0x0004 /* tunnel read write mode */
 #define SYNC_IO_MODE	0x0001
 #define ASYNC_IO_MODE	0x0002
 #define COMPRESSED_IO	0x0040
@@ -201,9 +199,6 @@ int q6asm_audio_client_buf_free_contiguous(unsigned int dir,
 int q6asm_open_read(struct audio_client *ac, uint32_t format
 		/*, uint16_t bits_per_sample*/);
 
-int q6asm_open_read_v2(struct audio_client *ac, uint32_t format,
-			uint16_t bits_per_sample);
-
 int q6asm_open_write(struct audio_client *ac, uint32_t format
 		/*, uint16_t bits_per_sample*/);
 
@@ -217,9 +212,6 @@ int q6asm_stream_open_write_v2(struct audio_client *ac, uint32_t format,
 int q6asm_open_read_write(struct audio_client *ac,
 			uint32_t rd_format,
 			uint32_t wr_format);
-
-int q6asm_open_loopback_v2(struct audio_client *ac,
-			   uint16_t bits_per_sample);
 
 int q6asm_write(struct audio_client *ac, uint32_t len, uint32_t msw_ts,
 				uint32_t lsw_ts, uint32_t flags);
@@ -283,10 +275,6 @@ int q6asm_enc_cfg_blk_aac(struct audio_client *ac,
 
 int q6asm_enc_cfg_blk_pcm(struct audio_client *ac,
 			uint32_t rate, uint32_t channels);
-
-int q6asm_enc_cfg_blk_pcm_format_support(struct audio_client *ac,
-			uint32_t rate, uint32_t channels,
-			uint16_t bits_per_sample);
 
 int q6asm_set_encdec_chan_map(struct audio_client *ac,
 		uint32_t num_channels);
@@ -375,9 +363,6 @@ int q6asm_set_lrgain(struct audio_client *ac, int left_gain, int right_gain);
 int q6asm_set_mute(struct audio_client *ac, int muteflag);
 
 int q6asm_get_session_time(struct audio_client *ac, uint64_t *tstamp);
-
-int q6asm_send_audio_effects_params(struct audio_client *ac, char *params,
-				    uint32_t params_length);
 
 /* Client can set the IO mode to either AIO/SIO mode */
 int q6asm_set_io_mode(struct audio_client *ac, uint32_t mode);
