@@ -35,8 +35,6 @@
 #define INVALID_COPP_ID 0xFF
 #define ADM_GET_PARAMETER_LENGTH 350
 
-#define ULL_SUPPORTED_SAMPLE_RATE 48000
-#define ULL_MAX_SUPPORTED_CHANNEL 2
 enum {
 	ADM_RX_AUDPROC_CAL,
 	ADM_TX_AUDPROC_CAL,
@@ -521,6 +519,7 @@ static int32_t adm_callback(struct apr_client_data *data, void *priv)
 				/* Should only come here if there is an APR */
 				/* error or malformed APR packet. Otherwise */
 				/* response will be returned as */
+				/* ADM_CMDRSP_SHARED_MEM_MAP_REGIONS */
 				if (payload[1] != 0) {
 					pr_err("%s: ADM map error, resuming\n",
 						__func__);
@@ -999,9 +998,11 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 		open.hdr.opcode = ADM_CMD_DEVICE_OPEN_V5;
 		open.flags = 0x00;
 		if (perf_mode) {
-			open.flags |= ADM_ULTRA_LOW_LATENCY_DEVICE_SESSION;
+			open.flags |= ADM_LOW_LATENCY_DEVICE_SESSION <<
+				ADM_BIT_SHIFT_DEVICE_PERF_MODE_FLAG;
 		} else {
-			open.flags |= ADM_LEGACY_DEVICE_SESSION;
+			open.flags |= ADM_LEGACY_DEVICE_SESSION <<
+				ADM_BIT_SHIFT_DEVICE_PERF_MODE_FLAG;
 		}
 
 		open.mode_of_operation = path;
@@ -1019,15 +1020,8 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 			(open.topology_id == VPM_TX_DM_FLUENCE_COPP_TOPOLOGY))
 				rate = 16000;
 
-		if (perf_mode) {
-			open.topology_id = NULL_COPP_TOPOLOGY;
-			rate = ULL_SUPPORTED_SAMPLE_RATE;
-			if(channel_mode > ULL_MAX_SUPPORTED_CHANNEL)
-				channel_mode = ULL_MAX_SUPPORTED_CHANNEL;
-		}
 		open.dev_num_channel = channel_mode & 0x00FF;
 		open.bit_width = bits_per_sample;
-		WARN_ON(perf_mode && (rate != 48000));
 		open.sample_rate  = rate;
 		memset(open.dev_channel_mapping, 0, 8);
 
@@ -1038,8 +1032,8 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 			open.dev_channel_mapping[1] = PCM_CHANNEL_FR;
 		} else if (channel_mode == 3)	{
 			open.dev_channel_mapping[0] = PCM_CHANNEL_FL;
-			open.dev_channel_mapping[1] = PCM_CHANNEL_FR;
-			open.dev_channel_mapping[2] = PCM_CHANNEL_FC;
+			open.dev_channel_mapping[0] = PCM_CHANNEL_FR;
+			open.dev_channel_mapping[1] = PCM_CHANNEL_FC;
 		} else if (channel_mode == 4) {
 			open.dev_channel_mapping[0] = PCM_CHANNEL_FL;
 			open.dev_channel_mapping[1] = PCM_CHANNEL_FR;
