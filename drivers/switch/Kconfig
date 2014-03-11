@@ -13,10 +13,16 @@ config SWITCH_GPIO
 	  Say Y here to enable GPIO based switch support.
 
 config SWITCH_MAX1462X
-	tristate "MAXIM Headset detection driver(MAX14628)"
+	tristate "LGE Headset detection driver(MAX14628)"
+	depends on MACH_LGE
 	default n
 	help
-	  Say Y here to enable max1462x switch support. This works
-	  as earjack detection switch and reduces popup noise.
+	  Say Y here to enable GPIO based switch support.
 
+config SWITCH_MAX1462X_WA
+	tristate "LGE Headset detection driver(MAX14628) workaround "
+	depends on MACH_LGE
+	default n
+	help
+	  Say Y here to enable GPIO based switch support.
 endif # SWITCH
